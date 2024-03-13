@@ -92,24 +92,27 @@ class encoder_menu(tk.Frame):
 
 class decoder_menu(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent, bg=PURPLE)
         self.decoder = Decoder()
         self.suffix = 0
-        self.file_path = path.expanduser("~/Documents/encoder_output0.gif")
-        self.title = tk.Label(self, text="Decoder")
+        self.msg = 'Nothing has been decoded yet.'
+        self.file_path = 'Select a file to decode'
+        self.title = tk.Label(self, text="Decoder", font=('yu gothic ui light', 20), bg=PURPLE, fg=NAVY)
         self.title.grid(row=0, column=0, columnspan=2)
-        self.select_file_label = tk.Label(self, text="Select a file to decode:")
+        self.select_file_label = tk.Label(self, text="Select a file to decode:", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
         self.select_file_label.grid(row=1, column=0)
-        self.load_file_button = tk.Button(self, text="Select", command=self.select_file)
+        self.load_file_button = tk.Button(self, text="Select", command=self.select_file, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
         self.load_file_button.grid(row=1, column=1)
-        self.file_path_label = tk.Label(self, text=f'File Path: {self.file_path}')
+        self.file_path_label = tk.Label(self, text=f'File Path: {self.file_path}', font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
         self.file_path_label.grid(row=2, column=0, columnspan=2)
-        self.suffix_label = tk.Label(self, text="Enter the code for extra security(if applicable):")
+        self.suffix_label = tk.Label(self, text="Enter the code for extra security(if applicable):", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
         self.suffix_label.grid(row=3, column=0)
         self.suffix_entry = tk.Entry(self, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, highlightbackground=PURPLE)
         self.suffix_entry.grid(row=3, column=1)
-        self.decode_button = tk.Button(self, text="Decode!", command=self.decode_button_clicked)
+        self.decode_button = tk.Button(self, text="Decode!", command=self.decode_button_clicked, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
         self.decode_button.grid(row=4, column=0, columnspan=2)
+        self.msg_label = tk.Label(self, text=self.msg, font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY, highlightbackground=PURPLE)
+        self.msg_label.grid(row=5, column=0, columnspan=2)
 
     def select_file(self):
         self.file_path = filedialog.askopenfilename()
@@ -124,3 +127,6 @@ class decoder_menu(tk.Frame):
             self.decoder.decode(self.file_path)
         else:
             self.decoder.decode(self.file_path, self.suffix)
+        
+        self.msg = self.decoder.msg
+        self.msg_label.config(text=self.msg)
