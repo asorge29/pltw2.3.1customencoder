@@ -1,33 +1,38 @@
 import tkinter as tk
+import platform
 from tkinter import filedialog, messagebox
 from encode import Encoder
 from decode import Decoder
-from os import path
 
-NAVY = '#000022'
-TEAL = '#3e8989'
-GREEN = '#b0fe76'
-RED = '#95190c'
-PURPLE = '#a997df'
+if platform.system() == 'Darwin':
+    FONT = 'PingFang SC'
+else:
+    FONT = 'yu gothic ui light'
+
+TEXT = '#88C0D0'
+WIDGETS = '#434C5E'
+GREEN = '#A3BE8C'
+RED = '#BF616A'
+BACKG = '#2E3440'
 
 class choice_window(tk.Frame):
     def __init__(self, parent, encode_frame, decode_frame):
-        super().__init__(parent, padx=50, pady=0, bg=PURPLE)
-        self.encode_button = tk.Button(self, text="Encode", font=('yu gothic ui light', 20), command=self.encode_button_clicked, bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
+        super().__init__(parent, padx=50, pady=0, bg=BACKG)
+        self.encode_button = tk.Button(self, text="Encode", font=(FONT, 20), command=self.encode_button_clicked, bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
         self.encode_button.pack(pady=10)
-        self.decode_button = tk.Button(self, text="Decode", font=('yu gothic ui light', 20), command=self.decode_button_clicked, bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
+        self.decode_button = tk.Button(self, text="Decode", font=(FONT, 20), command=self.decode_button_clicked, bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
         self.decode_button.pack(pady=10)
-        self.quit_button = tk.Button(self, text="Quit", font=('yu gothic ui light', 20), command=self.quit_button_clicked, bg=TEAL, fg=NAVY, activebackground=RED, activeforeground=NAVY, highlightbackground=PURPLE)
+        self.quit_button = tk.Button(self, text="Quit", font=(FONT, 20), command=self.quit_button_clicked, bg=WIDGETS, fg=TEXT, activebackground=RED, activeforeground=TEXT, highlightbackground=BACKG)
         self.quit_button.pack(pady=10)
         self.decode_frame = decode_frame
         self.encode_frame = encode_frame
 
     def encode_button_clicked(self):
-        self.encode_frame.tkraise()
+        self.encode_frame.pack(expand=True, fill=tk.BOTH)
         self.destroy()
 
     def decode_button_clicked(self):
-        self.decode_frame.tkraise()
+        self.decode_frame.pack(expand=True, fill=tk.BOTH)
         self.destroy()
 
     def quit_button_clicked(self):
@@ -35,27 +40,31 @@ class choice_window(tk.Frame):
 
 class encoder_menu(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, bg=PURPLE)
+        super().__init__(parent, bg=BACKG, padx=20, pady=10)
         self.encoder = Encoder()
         self.output_dir = ""
         self.msg = ""
         self.suffix = 0
-        self.title = tk.Label(self, text="Encoder", font=('yu gothic ui light', 20), bg=PURPLE, fg=NAVY)
+        self.title = tk.Label(self, text="Encoder", font=(FONT, 20), bg=BACKG, fg=TEXT)
         self.title.grid(row=0, column=0, columnspan=2)
-        self.msg_label = tk.Label(self, text="Enter a message to encode:", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.msg_label.grid(row=1, column=0)
-        self.msg_entry = tk.Entry(self, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, highlightbackground=PURPLE)
-        self.msg_entry.grid(row=1, column=1)
-        self.output_dir_label = tk.Label(self, text="Select an output directory -->", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.output_dir_label.grid(row=2, column=0)
-        self.output_dir_select_button = tk.Button(self, text="Select", font=('yu gothic ui light', 15), command=self.select_output_dir, bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
-        self.output_dir_select_button.grid(row=2, column=1)
-        self.suffix_label = tk.Label(self, text="Enter an optional code for extra security(0-65535):\nNote: this must be hand delivered to the reciever.", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.suffix_label.grid(row=3, column=0)
-        self.suffix_entry = tk.Entry(self, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, highlightbackground=PURPLE)
-        self.suffix_entry.grid(row=3, column=1)
-        self.encode_button = tk.Button(self, text="Encode!", font=('yu gothic ui light', 15), command=self.encode_button_clicked, bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
-        self.encode_button.grid(row=4, column=0, columnspan=2)
+        self.msg_label = tk.Label(self, text="Enter a message to encode:", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.msg_label.grid(row=1, column=0, sticky='e', pady=(0, 5))
+        self.msg_entry = tk.Entry(self, font=(FONT, 15), bg=WIDGETS, fg=TEXT, highlightbackground=BACKG)
+        self.msg_entry.grid(row=1, column=1, sticky='ew', pady=(0, 5))
+        self.name_label = tk.Label(self, text="Enter a name for the file:", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.name_label.grid(row=2, column=0, sticky='e', pady=(0, 5))
+        self.name_entry = tk.Entry(self, font=(FONT, 15), bg=WIDGETS, fg=TEXT, highlightbackground=BACKG)
+        self.name_entry.grid(row=2, column=1, sticky='e', pady=(0, 5))
+        self.output_dir_label = tk.Label(self, text="Select an output directory -->", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.output_dir_label.grid(row=3, column=0, sticky='e', pady=(0, 5))
+        self.output_dir_select_button = tk.Button(self, text="Select", font=(FONT, 15), command=self.select_output_dir, bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
+        self.output_dir_select_button.grid(row=3, column=1, sticky='ew', pady=(0, 5))
+        self.suffix_label = tk.Label(self, text="Enter an optional code(0-65535):", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.suffix_label.grid(row=4, column=0, pady=(0, 5))
+        self.suffix_entry = tk.Entry(self, font=(FONT, 15), bg=WIDGETS, fg=TEXT, highlightbackground=BACKG)
+        self.suffix_entry.grid(row=4, column=1, sticky='nwe', pady=(0, 5))
+        self.encode_button = tk.Button(self, text="Encode!", font=(FONT, 15), command=self.encode_button_clicked, bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
+        self.encode_button.grid(row=5, column=0, columnspan=2)
 
     def encode_button_clicked(self):
         self._disable_input()
@@ -92,27 +101,31 @@ class encoder_menu(tk.Frame):
 
 class decoder_menu(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent, bg=PURPLE)
+        super().__init__(parent, bg=BACKG, padx=20, pady=10)
         self.decoder = Decoder()
         self.suffix = 0
         self.msg = 'Nothing has been decoded yet.'
-        self.file_path = 'Select a file to decode'
-        self.title = tk.Label(self, text="Decoder", font=('yu gothic ui light', 20), bg=PURPLE, fg=NAVY)
-        self.title.grid(row=0, column=0, columnspan=2)
-        self.select_file_label = tk.Label(self, text="Select a file to decode:", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.select_file_label.grid(row=1, column=0)
-        self.load_file_button = tk.Button(self, text="Select", command=self.select_file, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
-        self.load_file_button.grid(row=1, column=1)
-        self.file_path_label = tk.Label(self, text=f'File Path: {self.file_path}', font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.file_path_label.grid(row=2, column=0, columnspan=2)
-        self.suffix_label = tk.Label(self, text="Enter the code for extra security(if applicable):", font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY)
-        self.suffix_label.grid(row=3, column=0)
-        self.suffix_entry = tk.Entry(self, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, highlightbackground=PURPLE)
-        self.suffix_entry.grid(row=3, column=1)
-        self.decode_button = tk.Button(self, text="Decode!", command=self.decode_button_clicked, font=('yu gothic ui light', 15), bg=TEAL, fg=NAVY, activebackground=GREEN, activeforeground=NAVY, highlightbackground=PURPLE)
-        self.decode_button.grid(row=4, column=0, columnspan=2)
-        self.msg_label = tk.Label(self, text=self.msg, font=('yu gothic ui light', 15), bg=PURPLE, fg=NAVY, highlightbackground=PURPLE)
-        self.msg_label.grid(row=5, column=0, columnspan=2)
+        self.file_path = 'Select a file to decode^^^'
+        self.title = tk.Label(self, text="Decoder", font=(FONT, 20), bg=BACKG, fg=TEXT)
+        self.title.grid(row=0, column=0, columnspan=2, pady=(0, 5))
+        self.select_file_label = tk.Label(self, text="Select a file to decode:", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.select_file_label.grid(row=1, column=0, sticky='e', pady=(0, 5))
+        self.load_file_button = tk.Button(self, text="Select", command=self.select_file, font=(FONT, 15), bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
+        self.load_file_button.grid(row=1, column=1, sticky='w', pady=(0, 5))
+        self.file_path_label = tk.Label(self, text=f'File Path: {self.file_path}', font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.file_path_label.grid(row=2, column=0, columnspan=2, pady=(0, 5))
+        self.suffix_label = tk.Label(self, text="Enter the extra code(if applicable):", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.suffix_label.grid(row=3, column=0, pady=(0, 5), sticky='e')
+        self.suffix_entry = tk.Entry(self, font=(FONT, 15), bg=WIDGETS, fg=TEXT, highlightbackground=BACKG)
+        self.suffix_entry.grid(row=3, column=1, pady=(0, 5), sticky='w')
+        self.decode_button = tk.Button(self, text="Decode!", command=self.decode_button_clicked, font=(FONT, 15), bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
+        self.decode_button.grid(row=4, column=1, sticky='w')
+        self.back_button = tk.Button(self, text="Back", font=(FONT, 15), command=None, bg=WIDGETS, fg=TEXT, activebackground=RED, activeforeground=TEXT, highlightbackground=BACKG)
+        self.back_button.grid(row=4, column=0, sticky='e', padx=10)
+        self.output_label = tk.Label(self, text="Decoded Message:", font=(FONT, 15), bg=BACKG, fg=TEXT)
+        self.output_label.grid(row=5, column=0, columnspan=2)
+        self.msg_label = tk.Label(self, text=self.msg, font=(FONT, 15), bg=BACKG, fg=TEXT, highlightbackground=BACKG, wraplength=500)
+        self.msg_label.grid(row=6, column=0, columnspan=2)
 
     def select_file(self):
         self.file_path = filedialog.askopenfilename()
