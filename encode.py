@@ -26,93 +26,49 @@ class Encoder():
         self.hexes = self._ints_to_hex(self.unicode_chars)
         self.colors = self._hexes_to_colors(self.hexes)
 
-        self._draw_msg()
-        self._take_screenshot(self.window)
-        self.window.bye()
+        self._generate_image()
         
-    def _chars_to_unicode(self, msg):
+    def _chars_to_unicode(self, msg) -> list:
         unicode_chars = []
         for char in msg:
             unicode_chars.append(ord(char))
         return unicode_chars
     
-    def _ints_to_hex(self, ints:list):
+    def _ints_to_hex(self, ints:list) -> list:
         hexes = []
         for i in range(0, len(ints)):
             hexes.append(hex(ints[i]))
         return hexes
     
-    def _hexes_to_colors(self, hexes:list):
+    def _hexes_to_colors(self, hexes:list) -> list:
         colors = []
         for hex in hexes:
             colors.append(f'{hex.replace("0x", "#")}{self.suffix}')
         return colors
     
-    def _calculate_length(self):
+    def _calculate_pixel_length(self) -> int:
         self.colors_len = len(self.colors)
+        return self.colors_len
         
-    def _draw_msg(self):
-        self._setup_turtle()
+    def _generate_image(self) -> Image:
+        pixels = self._calculate_pixel_length()
+        rows = pixels // 98 + 3
+        cols = 100
+        image = Image.new('RGB', (cols, rows), (255, 255, 255))
+        image.putpixel((0, 0), (255, 0, 0))
+        x, y = 1, 1
         for color in self.colors:
-            self.drawer.color(color)
-            self.drawer.stamp()
-            self.drawer.forward(20)
-            if self.drawer.xcor() > 400:
-                self.drawer.goto(-400, self.drawer.ycor()-20)
-        self.drawer.ht()
-        self.window.update()
+            image.putpixel((x, y), self._hex_to_rgb(color))
+            x += 1
+            if x == cols-1:
+                x = 1
+                y += 1
+        y += 1
+        image.putpixel((x, y), (255, 0, 0))
 
+        image.save(f'{self.output_dir}/encoder_output.gif')
 
-    def _setup_turtle(self):
-        self.drawer = trtl.Turtle()
-        self.window = trtl.Screen()
-        self.window.title("Encoder")
-        self.window.tracer(0)
-        self.window.setup(width=1000, height=1000)
-        self.drawer.penup()
-        self.drawer.shape("square")
-        self.drawer.goto(-420, 420)
-        self.drawer.color("red")
-        self.drawer.stamp()
-        self.drawer.forward(20)
-        self.drawer.right(90)
-        self.drawer.forward(20)
-        self.drawer.left(90)
-
-    def _take_screenshot(self, screen):
-        with mss.mss() as sct:
-            output_number = 0
-            while True:
-                try:
-                    sct.shot(mon=1,output=f'{self.output_dir}/encoder_output{output_number}.gif')
-                    output_path = f'{self.output_dir}/encoder_output{output_number}.gif'
-                    break
-                except OSError:
-                    output_number += 1
-        root = trtl.getcanvas().winfo_toplevel()
-        x=root.winfo_rootx()
-        y=root.winfo_rooty()
-        x1 = x + self.window.window_width()
-        y1 = y + self.window.window_height()
-
-        image = Image.open(output_path)
-        bounds = x,y,x1,y1
-        if platform.system() == "Darwin":
-            bounds = 2*x,2*y,2*x1,2*y1
-        image = image.crop(bounds)
-        image.save(output_path)
-
-    def _test_format(self):
-        tester = trtl.Turtle()
-        tester.penup()
-        tester.goto(-420, 420)
-        tester.color("white")
-        tester.shape("circle")
-        tester.shapesize(0.5)
-        tester.stamp()
-        tester.goto(tester.xcor()+20, tester.ycor()-20)
-        for i in range(200):
-            tester.stamp()
-            tester.forward(20)
-            if tester.xcor() > 400:
-                tester.goto(-400, tester.ycor()-20)
+    def _hex_to_rgb(self, hex) -> tuple:
+        hex = hex.lstrip('#')
+        r, g, b = hex[0:2], hex[2:4], hex[4:6]
+        return (int(r, 16), int(g, 16), int(b, 16))
