@@ -1,8 +1,4 @@
-import turtle as trtl
-import mss
-import platform
 from PIL import Image
-from os import path
 
 class Encoder():
     def __init__(self):
@@ -12,11 +8,12 @@ class Encoder():
         self.hexes = []
         self.colors = []
         self.colors_len = len(self.colors)
-        self.output_dir = path.expanduser("~/Documents")
+        self.output_dir = ''
         
-    def encode(self, input, output_dir, suffix=65280):
+    def encode(self, input, output_dir, output_name,  suffix=65280):
         self.input = input
         self.input_len = len(self.input)
+        self.output_name = output_name
         if output_dir != '':
             self.output_dir = output_dir
         self.suffix = hex(suffix)[2:6]
@@ -66,7 +63,7 @@ class Encoder():
         y += 1
         image.putpixel((x, y), (255, 0, 0))
 
-        image.save(f'{self.output_dir}/encoder_output.gif')
+        image.save(f'{self.output_dir}/{self.output_name}.gif')
 
     def _hex_to_rgb(self, hex) -> tuple:
         hex = hex.lstrip('#')
