@@ -1,6 +1,6 @@
 import tkinter as tk
 import platform
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, scrolledtext as tksc
 from encode import Encoder
 from decode import Decoder
 
@@ -127,7 +127,8 @@ class decoder_menu(tk.Frame):
         self.decode_button.grid(row=4, column=0, columnspan=2)
         self.output_label = tk.Label(self, text="Decoded Message:", font=(FONT, 15), bg=BACKG, fg=TEXT)
         self.output_label.grid(row=5, column=0, columnspan=2)
-        self.msg_label = tk.Label(self, text=self.msg, font=(FONT, 15), bg=BACKG, fg=TEXT, highlightbackground=BACKG, wraplength=500)
+        self.msg_label = tksc.ScrolledText(self, font=(FONT, 15), bg=BACKG, fg=TEXT, highlightbackground=BACKG)
+        self.msg_label.config(state='disabled', wrap='word')
         self.msg_label.grid(row=6, column=0, columnspan=2)
 
     def select_file(self):
@@ -147,10 +148,12 @@ class decoder_menu(tk.Frame):
         
         self.msg = self.decoder.msg
         if self.decoder.suffix_verified:
-            self.msg_label.config(text=self.msg)
+            self.msg_label.delete(1.0, tk.END)
+            self.msg_label.insert(tk.END, self.msg)
             messagebox.showinfo(title="Success", message="Successfully decoded message!")
-        else:
-            self.msg_label.config(text='Invalid code!')
+        else:           
+            self.msg_label.delete(1.0, tk.END)
+            self.msg_label.insert(tk.END, 'Invalid code')
             messagebox.showerror(title="Error", message="Invalid code")
         
         self._enable_input()
@@ -160,7 +163,9 @@ class decoder_menu(tk.Frame):
         self.load_file_button.config(state='disabled')
         self.suffix_entry.config(state='disabled')
         self.decode_button.config(state='disabled')
-        self.msg_label.config(text='Decoding...')
+        self.msg_label.config(state='normal')
+        self.msg_label.delete(1.0, tk.END)
+        self.msg_label.insert( tk.END, 'Decoding...')
 
     def _enable_input(self):
         self.load_file_button.config(state='normal')
