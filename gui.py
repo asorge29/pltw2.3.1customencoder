@@ -45,6 +45,7 @@ class encoder_menu(tk.Frame):
         self.output_dir = ""
         self.msg = ""
         self.suffix = 0
+        self.file_name = 'encoder_output'
         self.title = tk.Label(self, text="Encoder", font=(FONT, 20), bg=BACKG, fg=TEXT)
         self.title.grid(row=0, column=0, columnspan=2)
         self.msg_label = tk.Label(self, text="Enter a message to encode:", font=(FONT, 15), bg=BACKG, fg=TEXT)
@@ -69,6 +70,8 @@ class encoder_menu(tk.Frame):
     def encode_button_clicked(self):
         self._disable_input()
         self.msg = self.msg_entry.get()
+        if self.name_entry.get() != '':
+            self.file_name = self.name_entry.get()
         try:
             self.suffix = int(self.suffix_entry.get())
         except ValueError:
@@ -76,9 +79,9 @@ class encoder_menu(tk.Frame):
         if self.suffix not in range(0, 65536):
             self.suffix = 0
         if self.suffix == 0:
-            self.encoder.encode(self.msg, self.output_dir)
+            self.encoder.encode(self.msg, self.output_dir, self.file_name)
         else:
-            self.encoder.encode(self.msg, self.output_dir, self.suffix)
+            self.encoder.encode(self.msg, self.output_dir, self.file_name, self.suffix)
         
         messagebox.showinfo(title="Success", message="Successfully encoded message!")
         self._enable_input()
@@ -92,12 +95,14 @@ class encoder_menu(tk.Frame):
         self.suffix_entry.config(state='disabled')
         self.output_dir_select_button.config(state='disabled')
         self.encode_button.config(state='disabled')
+        self.name_entry.config(state='disabled')
 
     def _enable_input(self):
         self.msg_entry.config(state='normal')
         self.suffix_entry.config(state='normal')
         self.output_dir_select_button.config(state='normal')
         self.encode_button.config(state='normal')
+        self.name_entry.config(state='normal')
 
 class decoder_menu(tk.Frame):
     def __init__(self, parent):
@@ -119,9 +124,7 @@ class decoder_menu(tk.Frame):
         self.suffix_entry = tk.Entry(self, font=(FONT, 15), bg=WIDGETS, fg=TEXT, highlightbackground=BACKG)
         self.suffix_entry.grid(row=3, column=1, pady=(0, 5), sticky='w')
         self.decode_button = tk.Button(self, text="Decode!", command=self.decode_button_clicked, font=(FONT, 15), bg=WIDGETS, fg=TEXT, activebackground=GREEN, activeforeground=TEXT, highlightbackground=BACKG)
-        self.decode_button.grid(row=4, column=1, sticky='w')
-        self.back_button = tk.Button(self, text="Back", font=(FONT, 15), command=None, bg=WIDGETS, fg=TEXT, activebackground=RED, activeforeground=TEXT, highlightbackground=BACKG)
-        self.back_button.grid(row=4, column=0, sticky='e', padx=10)
+        self.decode_button.grid(row=4, column=0, columnspan=2)
         self.output_label = tk.Label(self, text="Decoded Message:", font=(FONT, 15), bg=BACKG, fg=TEXT)
         self.output_label.grid(row=5, column=0, columnspan=2)
         self.msg_label = tk.Label(self, text=self.msg, font=(FONT, 15), bg=BACKG, fg=TEXT, highlightbackground=BACKG, wraplength=500)
@@ -132,6 +135,7 @@ class decoder_menu(tk.Frame):
         self.file_path_label.config(text=f'File Path: {self.file_path}')
 
     def decode_button_clicked(self):
+        self._disable_input()
         try:
             self.suffix = int(self.suffix_entry.get())
         except ValueError:
@@ -142,4 +146,23 @@ class decoder_menu(tk.Frame):
             self.decoder.decode(self.file_path, self.suffix)
         
         self.msg = self.decoder.msg
-        self.msg_label.config(text=self.msg)
+        if self.decoder.suffix_verified:
+            self.msg_label.config(text=self.msg)
+            messagebox.showinfo(title="Success", message="Successfully decoded message!")
+        else:
+            self.msg_label.config(text='Invalid code!')
+            messagebox.showerror(title="Error", message="Invalid code")
+        
+        self._enable_input()
+
+
+    def _disable_input(self):
+        self.load_file_button.config(state='disabled')
+        self.suffix_entry.config(state='disabled')
+        self.decode_button.config(state='disabled')
+        self.msg_label.config(text='Decoding...')
+
+    def _enable_input(self):
+        self.load_file_button.config(state='normal')
+        self.suffix_entry.config(state='normal')
+        self.decode_button.config(state='normal')

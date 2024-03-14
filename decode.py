@@ -11,6 +11,7 @@ class Decoder():
         self.suffix = 0
         self.image = None
         self.start_pixel = (0, 0)
+        self.suffix_verified = False
 
     def decode(self, image_path, suffix=65280):
         self.image_path = image_path
@@ -20,11 +21,13 @@ class Decoder():
 
         self._open_image()
         self._find_start_pixel()
-        self.colors = self._pull_hex_colors()
-        self.hexes = self._pull_hexes()
-        self.unicode_chars = self._hex_to_unicode()
-        self.chars = self._unicode_to_chars()
-        self.msg = self._chars_to_str()
+
+        if self.suffix_verified:
+            self.colors = self._pull_hex_colors()
+            self.hexes = self._pull_hexes()
+            self.unicode_chars = self._hex_to_unicode()
+            self.chars = self._unicode_to_chars()
+            self.msg = self._chars_to_str()
 
     def _open_image(self):
         self.image = Image.open(self.image_path)
@@ -36,6 +39,7 @@ class Decoder():
                 r, g, b = self.image.getpixel((i, j))
                 if r == 255 and g == 0 and b == 0:
                     self.start_pixel = (i, j)
+                    self.suffix_verified = self._check_suffix(i, j)
                     break
             break
 
@@ -79,3 +83,12 @@ class Decoder():
         for char in self.chars:
             str = str + char
         return str
+    
+    def _check_suffix(self, startx, starty):
+        r, g, b = self.image.getpixel((startx+1, starty+1))
+        g = format(g, '02X')
+        b = format(b, '02X')
+        suffix = g + b
+        if self.suffix.lower() != suffix.lower():
+            return False
+        return True
